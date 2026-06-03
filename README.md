@@ -10,18 +10,18 @@ VideoLAN's H.264/AVC encoder.
 
 Part of the [unpins](https://unpins.org) project — native single-binary builds with no third-party runtime dependencies.
 
-## Installation
+## Usage
 
-Install with [unpin](https://github.com/unpins/unpin):
+Run the `x264` program with [unpin](https://github.com/unpins/unpin):
 
 ```bash
-unpin x264
+unpin x264 -o out.264 input.y4m
 ```
 
-Or run without installing:
+To install it onto your PATH:
 
 ```bash
-unpin run x264
+unpin install x264
 ```
 
 ## Build locally
