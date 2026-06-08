@@ -1,14 +1,13 @@
 # x264
 
-Standalone build of [x264](https://www.videolan.org/developers/x264.html) —
-VideoLAN's H.264/AVC encoder.
+[x264](https://www.videolan.org/developers/x264.html) — VideoLAN's H.264/AVC encoder. A single self-contained binary, built natively for Linux, macOS, and Windows.
 
 [![CI](https://github.com/unpins/x264/actions/workflows/x264.yml/badge.svg)](https://github.com/unpins/x264/actions)
 ![Linux](https://img.shields.io/badge/Linux-✓-success?logo=linux&logoColor=white)
 ![macOS](https://img.shields.io/badge/macOS-✓-success?logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-✓-success?logo=windows&logoColor=white)
 
-Part of the [unpins](https://unpins.org) project — native single-binary builds with no third-party runtime dependencies.
+Part of the [unpins](https://unpins.org) catalog; install it with [`unpin`](https://github.com/unpins/unpin): `unpin install x264`.
 
 ## Usage
 
