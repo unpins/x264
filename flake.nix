@@ -1,5 +1,5 @@
 {
-  description = "Standalone build of x264";
+  description = "the x264 H.264 encoder as a single self-contained binary";
 
   nixConfig = {
     extra-substituters = [ "https://unpins.cachix.org" ];
