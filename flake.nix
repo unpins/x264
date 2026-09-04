@@ -70,12 +70,15 @@
       # Build via the unpin-llvm engine + emit a bitcode multicall module.
       engine = "unpin-llvm";
       multicall = {
+        # The `.exe` on the engine too, not the nixpkgs mingw-gcc cross — which
+        # is why windowsBuild now folds like the native one below.
+        windows = true;
         programs = [{ name = "x264"; }];
       };
       embedMan = false;
       smoke = [ "--version" ];
       smokePattern = "x264";
       build = pkgs: mk { engineFold = true; } pkgs.pkgsStatic;
-      windowsBuild = pkgs: mk { engineFold = false; } (ulib.mingwStaticCross pkgs);
+      windowsBuild = pkgs: mk { engineFold = true; } (ulib.mingwStaticCross pkgs);
     };
 }
