@@ -14,8 +14,12 @@ Part of the [unpins](https://unpins.org) catalog; install it with [`unpin`](http
 Run the `x264` program with [unpin](https://github.com/unpins/unpin):
 
 ```bash
-unpin x264 -o out.264 input.y4m
+unpin x264 --crf 23 -o out.mkv input.y4m
+unpin x264 --input-res 1920x1080 --fps 30 -o out.264 input.yuv
 ```
+
+It reads Y4M or raw YUV video and writes H.264 as a raw `.264` stream, or in an
+`.mkv` or `.flv` file.
 
 To install it onto your PATH:
 
@@ -33,7 +37,7 @@ nix build github:unpins/x264
 Or run directly:
 
 ```bash
-nix run github:unpins/x264
+nix run github:unpins/x264 -- --version
 ```
 
 The first invocation will offer to add the [unpins.cachix.org](https://unpins.cachix.org) substituter so most pulls come pre-built.
@@ -44,12 +48,9 @@ The [Releases](https://github.com/unpins/x264/releases) page has standalone bina
 
 ## Build notes
 
-- Single binary — the `x264` encoder, with its own libx264 linked statically
-  in. The standalone CLI reads raw YUV / y4m, so the closure is just nasm + the
-  C library (no ffmpeg/lavf input layer).
-- **Windows** is built with mingw: x264 is a first-class Windows codec and its
-  own `configure` cross-compiles cleanly. The `.exe` is fully static — it
-  imports only system DLLs (`KERNEL32`/`SHELL32`/`msvcrt`), no libx264 DLL and
-  no libgcc/winpthread runtime.
-- No man page: neither nixpkgs nor the upstream tarball ships one (upstream docs
-  are plain text), so none is embedded.
+- **Windows:** a single `.exe`, no companion DLLs.
+- **No MP4 output:** writing `.mp4` needs the L-SMASH or GPAC library, which
+  this build doesn't include. Write `.mkv` or a raw `.264` stream instead.
+- **No input from other containers:** reading MP4, MKV and similar files needs
+  FFmpeg libraries, which this build doesn't include; convert to Y4M first.
+- **No man pages** — x264 ships none; run with `--help` or `--fullhelp`.

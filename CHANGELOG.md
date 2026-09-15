@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- The Linux ppc64le binary encoded broken video: its PowerPC-optimized code
+  paths produced wrong pictures (a lossless `--qp 0` encode did not decode back
+  to its input, and `--crf 23` came out at a fraction of the quality at four
+  times the size). The rebuilt binary encodes correctly. Measured under
+  emulation; the other Linux binaries, the Intel macOS binary and the Windows
+  binary encode correctly.
+
 ### Changed
 
 - The Windows binary is now built by the same compiler as the Linux and macOS

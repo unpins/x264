@@ -62,6 +62,41 @@
             echo '${if scope.stdenv.hostPlatform.isDarwin then "$(OBJCLI)" else "x264.o"}: CFLAGS += -flto' >> Makefile
           '';
         });
+
+      # A `--version` smoke passes an encoder whose output is wrong, so the
+      # native build encodes for real: a lossless 8-bit and 10-bit encode must
+      # decode (with ffmpeg) back to the exact input, and encoding through
+      # stdin/stdout must match encoding files. The input is generated with awk.
+      # Runs wherever the build machine can execute the result.
+      withRoundTrip = pkgs: drv: drv.overrideAttrs (old: {
+        doInstallCheck = pkgs.stdenv.buildPlatform.canExecute pkgs.stdenv.hostPlatform;
+        nativeInstallCheckInputs = (old.nativeInstallCheckInputs or [ ])
+          ++ [ pkgs.buildPackages.ffmpeg-headless ];
+        installCheckPhase = ''
+          runHook preInstallCheck
+          x="''${bin:-$out}/bin/x264"
+          fail() { echo "installCheck: $*"; exit 1; }
+          LC_ALL=C awk 'BEGIN {
+            for (f = 0; f < 5; f++) {
+              for (i = 0; i < 64 * 48; i++) printf "%c", (i * 7 + f * 13 + int(i / 64) * 5) % 256
+              for (i = 0; i < 32 * 24 * 2; i++) printf "%c", (i * 3 + f * 29) % 256
+            }
+          }' > src.yuv
+          test "$(wc -c < src.yuv)" -eq 23040 || fail "probe input has the wrong size"
+          in="--input-res 64x48 --fps 25"
+          "$x" --quiet --threads 1 --qp 0 $in -o ll.264 src.yuv || fail "cannot encode"
+          ffmpeg -v error -i ll.264 -f rawvideo -pix_fmt yuv420p back.yuv
+          cmp -s src.yuv back.yuv || fail "lossless 8-bit encode is not exact"
+          "$x" --quiet --threads 1 --qp 0 --output-depth 10 $in -o ll10.264 src.yuv || fail "cannot encode 10-bit"
+          ffmpeg -v error -i ll10.264 -f rawvideo -pix_fmt yuv420p back10.yuv
+          cmp -s src.yuv back10.yuv || fail "lossless 10-bit encode is not exact"
+          "$x" --quiet --threads 1 --crf 23 $in -o crf.264 src.yuv || fail "cannot encode at --crf"
+          "$x" --quiet --threads 1 --crf 23 $in -o - - < src.yuv > piped.264 || fail "cannot encode through a pipe"
+          cmp -s crf.264 piped.264 || fail "encoding through stdin/stdout differs from files"
+          echo "installCheck: lossless 8/10-bit round trips exact, stdin/stdout match files"
+          runHook postInstallCheck
+        '';
+      });
     in
     ulib.mkStandaloneFlake {
       inherit self;
@@ -78,7 +113,7 @@
       embedMan = false;
       smoke = [ "--version" ];
       smokePattern = "x264";
-      build = pkgs: mk { engineFold = true; } pkgs.pkgsStatic;
+      build = pkgs: withRoundTrip pkgs (mk { engineFold = true; } pkgs.pkgsStatic);
       windowsBuild = pkgs: mk { engineFold = true; } (ulib.mingwStaticCross pkgs);
     };
 }
