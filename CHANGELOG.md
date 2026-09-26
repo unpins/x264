@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0-unstable-2025-01-03-2] - 2026-09-26
+
 ### Fixed
 
 - The Linux ppc64le binary encoded broken video: its PowerPC-optimized code
