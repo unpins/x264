@@ -48,7 +48,7 @@ The [Releases](https://github.com/unpins/x264/releases) page has standalone bina
 
 ## Build notes
 
-- **Windows:** a single `.exe`, no companion DLLs.
+- **Windows:** built with mingw-w64.
 - **No MP4 output:** writing `.mp4` needs the L-SMASH or GPAC library, which
   this build doesn't include. Write `.mkv` or a raw `.264` stream instead.
 - **No input from other containers:** reading MP4, MKV and similar files needs
