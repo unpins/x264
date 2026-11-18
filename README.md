@@ -53,4 +53,6 @@ The [Releases](https://github.com/unpins/x264/releases) page has standalone bina
   this build doesn't include. Write `.mkv` or a raw `.264` stream instead.
 - **No input from other containers:** reading MP4, MKV and similar files needs
   FFmpeg libraries, which this build doesn't include; convert to Y4M first.
+- **AviSynth scripts:** `.avs` input works on Windows and macOS when AviSynth+
+  is installed (it is loaded at run time); the Linux binaries don't read `.avs`.
 - **No man pages** — x264 ships none; run with `--help` or `--fullhelp`.

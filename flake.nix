@@ -43,6 +43,10 @@
       # warning and rescued — the case the hook is built for.
       mk = { engineFold }: scope:
         scope.x264.overrideAttrs (old: {
+          # The AviSynth input is loaded with dlopen at run time, which a static
+          # musl binary can't do: it would be listed and always fail to load.
+          configureFlags = (old.configureFlags or [ ])
+            ++ scope.lib.optional scope.stdenv.hostPlatform.isLinux "--disable-avs";
           postInstall = (old.postInstall or "") + "\n" + ''
             for o in $outputs; do
               d="''${!o}"
@@ -93,7 +97,8 @@
           "$x" --quiet --threads 1 --crf 23 $in -o crf.264 src.yuv || fail "cannot encode at --crf"
           "$x" --quiet --threads 1 --crf 23 $in -o - - < src.yuv > piped.264 || fail "cannot encode through a pipe"
           cmp -s crf.264 piped.264 || fail "encoding through stdin/stdout differs from files"
-          echo "installCheck: lossless 8/10-bit round trips exact, stdin/stdout match files"
+          if "$x" --fullhelp | grep -q 'y4m, avs'; then fail "the AviSynth input is listed"; fi
+          echo "installCheck: lossless 8/10-bit round trips exact, stdin/stdout match files, no AviSynth"
           runHook postInstallCheck
         '';
       });

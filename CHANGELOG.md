@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Changed
+
+- The Linux binaries no longer list the AviSynth (`.avs`) input, which could
+  never load there; it stays on Windows and macOS.
+
 ## [0-unstable-2025-01-03-2] - 2026-09-26
 
 ### Fixed
