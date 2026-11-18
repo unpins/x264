@@ -62,6 +62,7 @@
           # hook is a postBuild, so it would find no link sidecar at all. Build
           # the CLI in buildPhase; the install then just copies it.
           buildFlags = [ "cli" ];
+          # Inline, not a .patch: the target differs per OS.
           postPatch = (old.postPatch or "") + ''
             echo '${if scope.stdenv.hostPlatform.isDarwin then "$(OBJCLI)" else "x264.o"}: CFLAGS += -flto' >> Makefile
           '';
